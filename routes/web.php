@@ -33,4 +33,20 @@ $router->group(["middleware" => "auth"], function() use ($router) {
         $router->get('/news/chart', 'ChartController@index');
         $router->get('/news/{id}', 'IndexController@show');
     });
+
+    $router->group(["namespace" => "Analysis"], function() use ($router) {
+        $router->get('/analysis', 'IndexController@index');
+        $router->post('/analysis', 'IndexController@store');
+        $router->get('/analysis/{id}', 'IndexController@show');
+        $router->put('/analysis/{id}', 'IndexController@update');
+        $router->delete('/analysis/{id}', 'IndexController@destroy');
+    });
+
+    $router->group(["namespace" => "Auth"], function() use ($router) {
+        $router->get('/user', 'UserController@index');
+        $router->post('/user', 'UserController@store');
+        $router->get('/user/{id}', 'UserController@show');
+        $router->put('/user/{id}', 'UserController@update');
+        $router->delete('/user/{id}', 'UserController@destroy');
+    });
 });

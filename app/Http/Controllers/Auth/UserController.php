@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use DB;
+use App\Http\Abstracts\User;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -95,5 +96,131 @@ class UserController extends Controller
             "success" => true,
             "message" => "Ok"
         ]);
+    }
+
+    public function index(Request $request)
+    {
+        $data = null;
+        $list = [];
+        $count = 0;
+        $total = 0;
+        $keyword = $request->input('keyword');
+        $page = $request->input('page');
+        $length = $request->input('length');
+        $page = $page ? $page : 1;
+        $length = $length ? $length : 10;
+        $paging = [
+            "page" => $page,
+            "length" => $length
+        ];
+
+        $data = User::index($keyword, $paging);
+
+        return response()->json([
+            "success" => true,
+            "message" => "Sukses",
+            "data" => $data
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $name = $request->input('name');
+        $username = $request->input('username');
+        $password = $request->input('password');
+        $confirmPassword = $request->input('confirmPassword');
+        $userRole = $request->input('userRole');
+        try {
+            User::store(
+                $name,
+                $username,
+                $password,
+                $confirmPassword,
+                $userRole
+            );
+        } catch(\Exception $e) {
+            return response()->json([
+                "success" => false,
+                "message" => $e->getMessage(),
+                "data" => null
+            ], 422); 
+        }
+
+        return response()->json([
+            "success" => true,
+            "message" => "Sukses",
+            "data" => null
+        ]);        
+    }
+
+    public function update(Request $request, $id)
+    {
+        $name = $request->input('name');
+        $username = $request->input('username');
+        $password = $request->input('password');
+        $confirmPassword = $request->input('confirmPassword');
+        $userRole = $request->input('userRole');
+
+        try {
+            User::update(
+                $name,
+                $username,
+                $password,
+                $confirmPassword,
+                $userRole,
+                $id
+            );
+        } catch(\Exception $e) {
+            return response()->json([
+                "success" => false,
+                "message" => $e->getMessage(),
+                "data" => null
+            ], 422); 
+        }
+
+        return response()->json([
+            "success" => true,
+            "message" => "Sukses",
+            "data" => null
+        ]); 
+    }
+
+    public function show($id)
+    {
+        $data = null;
+        try {
+            $data = User::show($id);
+        } catch(\Exception $e) {
+            return response()->json([
+                "success" => false,
+                "message" => $e->getMessage(),
+                "data" => null
+            ], 422); 
+        }
+
+        return response()->json([
+            "success" => true,
+            "message" => "Sukses",
+            "data" => $data
+        ]);
+    }
+
+    public function destroy($id)
+    {
+        try {
+            User::destroy($id);
+        } catch(\Exception $e) {
+            return response()->json([
+                "success" => false,
+                "message" => $e->getMessage(),
+                "data" => null
+            ], 422); 
+        }
+
+        return response()->json([
+            "success" => true,
+            "message" => "Sukses",
+            "data" => null
+        ]); 
     }
 }

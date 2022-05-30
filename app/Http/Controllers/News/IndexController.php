@@ -19,8 +19,15 @@ class IndexController extends Controller
         $keyword = $request->input('keyword');
         $startDate = $request->input('startDate');
         $endDate = $request->input('endDate');
-
-        $data = News::index($keyword, $startDate, $endDate);
+        $page = $request->input('page');
+        $length = $request->input('length');
+        $page = $page ? $page : 1;
+        $length = $length ? $length : 10;
+        $paging = [
+            "page" => $page,
+            "length" => $length
+        ];
+        $data = News::index($keyword, $startDate, $endDate, $paging);
 
         return response()->json([
             "success" => true,

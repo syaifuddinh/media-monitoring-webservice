@@ -32,7 +32,7 @@ class ChartController extends Controller
         }
 
         $news = News::query($keyword, $startDate, $endDate)
-        ->select(DB::raw("DATE_FORMAT(published_date, '%Y-%m-%d') AS publishedDate"), "sentneg", "sentpos", "sentneutral", DB::raw("(sentneg + sentpos + sentneutral) AS senttotal"))
+        ->select(DB::raw("DATE_FORMAT(published_date, '%Y-%m-%d') AS publishedDate"), "sentiment", "sentneg", "sentpos", "sentneutral", DB::raw("(sentneg + sentpos + sentneutral) AS senttotal"))
         ->get();
 
         $list = collect($news);
@@ -45,15 +45,9 @@ class ChartController extends Controller
             foreach($grouped as $secondDate => $secondData) {
                 if($primaryDate === $secondDate) {
                     $listNews = collect($grouped[$secondDate]);
-
-                    $positif[$index] = $listNews->map(function($data) { return $data->sentpos; })->sum();
-                    $positif[$index] = round($positif[$index], 2);
-
-                    $negatif[$index] = $listNews->map(function($data) { return $data->sentneg; })->sum();
-                    $negatif[$index] = round($negatif[$index], 2);
-
-                    $netral[$index] = $listNews->map(function($data) { return $data->sentneutral; })->sum();
-                    $netral[$index] = round($netral[$index], 2);
+                    $positif[$index] = count($listNews->where("sentiment", "positif"));
+                    $negatif[$index] = count($listNews->where("sentiment", "negatif"));
+                    $netral[$index] = count($listNews->where("sentiment", "netral"));
 
                     $total[$index] = $positif[$index] + $negatif[$index] + $netral[$index];
                 }
