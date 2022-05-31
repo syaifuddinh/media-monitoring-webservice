@@ -28,10 +28,16 @@ $router->group(["middleware" => "auth"], function() use ($router) {
         $router->post('/setting', 'IndexController@store');
         $router->get('/setting/{key}', 'IndexController@show');
     });
+
     $router->group(["namespace" => "News"], function() use ($router) {
         $router->get('/news', 'IndexController@index');
         $router->get('/news/chart', 'ChartController@index');
+        $router->get('/news/chart/sentiment-summary', 'SentimentSummaryController@index');
         $router->get('/news/{id}', 'IndexController@show');
+    });
+    
+    $router->group(["namespace" => "NewsSource"], function() use ($router) {
+        $router->get('/news-source', 'IndexController@index');
     });
 
     $router->group(["namespace" => "Analysis"], function() use ($router) {

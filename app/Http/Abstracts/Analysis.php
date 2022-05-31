@@ -25,19 +25,17 @@ class Analysis
     {
         
         $page = $paging["page"] ?? 1;
-        $length = $paging["length"] ?? 10;
+        $length = $paging["length"] ?? 1000000000000;
         $skip = ($page - 1) * $length;
         $list = self::query($keyword, $startDate, $endDate);
         $list = $list->select("id", "date", "description");
+        $count = $list->count("id");
         $list = $list->skip($skip);
         $list = $list->take($length);
-        $count = count($list->get());
 
         $endDate = $endDate ? $endDate . " 23:59" : $endDate;
 
         $queryTotal = DB::table(self::$table);
-        $queryTotal = $startDate ? $queryTotal->where("date", ">=", $startDate) : $queryTotal;
-        $queryTotal = $endDate ? $queryTotal->where("date", "<=", $endDate) : $queryTotal;
         $total = $queryTotal->count("id");
 
         $list = $list->get();

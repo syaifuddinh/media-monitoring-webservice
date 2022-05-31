@@ -22,6 +22,8 @@ class IndexController extends Controller
             if(!$setting)
                 throw new \Exception("Setting tidak ditemukan");
             else {
+                if($key === "keyword")
+                    DB::table("keywordsetting")->update(["keyword" => $value]);
                 DB::table("settings")
                 ->whereId($setting->id)
                 ->update([

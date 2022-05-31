@@ -28,9 +28,9 @@ class User
         $skip = ($page - 1) * $length;
         $list = self::query($keyword);
         $list = $list->select("id", "name", "username", "user_role AS userRole");
+        $count = $list->count("id");
         $list = $list->skip($skip);
         $list = $list->take($length);
-        $count = count($list->get());
 
         $queryTotal = DB::table(self::$table);
         $total = $queryTotal->count("id");

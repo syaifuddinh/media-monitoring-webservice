@@ -6,7 +6,7 @@ use DB;
 
 class News 
 {
-    public function query($keyword, $startDate, $endDate) {
+    public function query($keyword, $startDate, $endDate, $sentiment = "", $newsSource = "") {
         $endDate = $endDate ? $endDate . " 23:59" : $endDate;
         $list = DB::table("rawdata");
         $list = $list->orderBy("published_date", "DESC");
@@ -17,26 +17,26 @@ class News
         }) : $list;
         $list = $startDate ? $list->where("published_date", ">=", $startDate) : $list;
         $list = $endDate ? $list->where("published_date", "<=", $endDate) : $list;
+        $list = $sentiment ? $list->where("sentiment", "=", $sentiment) : $list;
+        $list = $newsSource ? $list->where("source", "=", $newsSource) : $list;
 
         return $list;
     }
 
-    public static function index($keyword, $startDate, $endDate, $paging = [])
+    public static function index($keyword, $startDate, $endDate, $paging = [], $sentiment = "", $newsSource = "")
     {
         $page = $paging["page"] ?? 1;
-        $length = $paging["length"] ?? 10;
+        $length = $paging["length"] ?? 1000000000000;
         $skip = ($page - 1) * $length;
-        $list = self::query($keyword, $startDate, $endDate);
+        $list = self::query($keyword, $startDate, $endDate, $sentiment, $newsSource);
         $list = $list->select("rawid AS id", "published_date AS publishedDate", "title", DB::raw("CONCAT(SUBSTRING(textcontent, 1, 426), '....') AS description"), "source", "sentiment");
+        $count = $list->count("rawid");
         $list = $list->skip($skip);
         $list = $list->take($length);
-        $count = count($list->get());
 
         $endDate = $endDate ? $endDate . " 23:59" : $endDate;
 
         $queryTotal = DB::table("rawdata");
-        $queryTotal = $startDate ? $queryTotal->where("published_date", ">=", $startDate) : $queryTotal;
-        $queryTotal = $endDate ? $queryTotal->where("published_date", "<=", $endDate) : $queryTotal;
         $total = $queryTotal->count("rawid");
 
         $list = $list->get();
