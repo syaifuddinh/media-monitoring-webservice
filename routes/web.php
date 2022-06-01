@@ -19,7 +19,7 @@ $router->get('/', function () use ($router) {
 
 $router->group(["namespace" => "Auth"], function() use ($router) {
     $router->post('/login', 'UserController@login');
-    $router->get('/check', 'UserController@check');
+    $router->get('/check-user', 'UserController@check');
     $router->post('/logout', 'UserController@logout');
 });
 
@@ -46,6 +46,14 @@ $router->group(["middleware" => "auth"], function() use ($router) {
         $router->get('/analysis/{id}', 'IndexController@show');
         $router->put('/analysis/{id}', 'IndexController@update');
         $router->delete('/analysis/{id}', 'IndexController@destroy');
+    });
+
+    $router->group(["namespace" => "Event"], function() use ($router) {
+        $router->get('/event', 'IndexController@index');
+        $router->post('/event', 'IndexController@store');
+        $router->get('/event/{id}', 'IndexController@show');
+        $router->put('/event/{id}', 'IndexController@update');
+        $router->delete('/event/{id}', 'IndexController@destroy');
     });
 
     $router->group(["namespace" => "Auth"], function() use ($router) {

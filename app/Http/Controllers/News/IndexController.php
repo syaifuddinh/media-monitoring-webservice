@@ -37,4 +37,25 @@ class IndexController extends Controller
             "data" => $data
         ]);
     }
+
+
+    public function show($id)
+    {
+        $data = null;
+        try {
+            $data = News::show($id);
+        } catch(\Exception $e) {
+            return response()->json([
+                "success" => false,
+                "message" => $e->getMessage(),
+                "data" => null
+            ], 422); 
+        }
+
+        return response()->json([
+            "success" => true,
+            "message" => "Sukses",
+            "data" => $data
+        ]);
+    }
 }

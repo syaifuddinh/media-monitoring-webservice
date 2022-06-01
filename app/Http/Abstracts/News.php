@@ -6,6 +6,8 @@ use DB;
 
 class News 
 {
+    public static $table = "rawdata";
+
     public function query($keyword, $startDate, $endDate, $sentiment = "", $newsSource = "") {
         $endDate = $endDate ? $endDate . " 23:59" : $endDate;
         $list = DB::table("rawdata");
@@ -46,5 +48,32 @@ class News
         $data["total"] = $total;
 
         return $data;
+    }
+
+
+    public static function show($id) {
+        self::validate($id);
+        $query = DB::table(self::$table);
+        $query = $query->whereRawid($id);
+        $result = $query
+        ->select(
+            "rawdata.*",
+            DB::raw("sentpos * 100 AS sentimenPositif"),
+            DB::raw("sentneg * 100 AS sentimenNegatif"),
+            DB::raw("sentneutral * 100 AS sentimenNetral")
+        )
+        ->first();
+        $result->sentimenPositif = number_format((float)$result->sentimenPositif, 2, '.', '');
+        $result->sentimenNegatif = number_format((float)$result->sentimenNegatif, 2, '.', '');
+        $result->sentimenNetral = number_format((float)$result->sentimenNetral, 2, '.', '');
+
+        return $result;
+    }
+
+    public static function validate($id) {
+        $query = DB::table(self::$table);
+        $query = $query->whereRawid($id)->first();
+        if(!$query)
+            throw new \Exception("Data tidak ditemukan");
     }
 }

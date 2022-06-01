@@ -40,14 +40,14 @@ class UserController extends Controller
             ]);
             $user = DB::table("users")
             ->where('username', $username)
-            ->select("name", "token", DB::raw("'Bearer' AS tokenType"))
+            ->select("name", "token", DB::raw("'Bearer' AS tokenType"), "user_role AS userRole")
             ->first();
         } catch (\Exception $e) {
             return response()->json([
                 "success" => false,
                 "message" => $e->getMessage(),
                 "data" => null
-            ], 401);
+            ], 400);
         }
 
         return response()->json([
@@ -57,7 +57,41 @@ class UserController extends Controller
     }
 
     public function check(Request $request) {
-           
+        $auth = $request->headers->get('Authorization');
+        $pieces= explode(" ", $auth);
+        $tokenType = count($pieces) > 0 ? $pieces[0] : null;
+        $token = count($pieces) > 1 ? $pieces[1] : null;
+        $data = null;
+        try {
+            if(!$tokenType || $tokenType !== "Bearer")
+                throw new \Exception("User tidak ditemukan");
+            if(!$token)
+                throw new \Exception("User tidak ditemukan");
+            else {
+                $existing = DB::table("users")
+                ->whereToken($token)
+                ->select("name", "user_role AS userRole")
+                ->first();
+                if(!$existing)
+                    throw new \Exception("User tidak ditemukan");
+                else
+                    $data = $existing;
+
+
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                "success" => false,
+                "message" => $e->getMessage(),
+                "data" => null
+            ], 400);
+        }
+
+        return response()->json([
+            "success" => true,
+            "message" => "OK",
+            "data" => $data
+        ]);
     }
 
     public function logout(Request $request) {
