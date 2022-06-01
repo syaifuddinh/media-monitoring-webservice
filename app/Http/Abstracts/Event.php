@@ -69,6 +69,7 @@ class Event
         $query = $query->whereId($id);
         $query->update([
             "updated_at" => date("Y-m-d H:i:s"),
+            "date" => $date,
             "description" => $description
         ]);
     }
