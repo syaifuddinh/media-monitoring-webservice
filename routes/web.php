@@ -34,6 +34,7 @@ $router->group(["middleware" => "auth"], function() use ($router) {
         $router->get('/news/chart', 'ChartController@index');
         $router->get('/news/chart/sentiment-summary', 'SentimentSummaryController@index');
         $router->get('/news/{id}', 'IndexController@show');
+        $router->put('/news/{newsId}/sentiment', 'SentimentController@update');
     });
     
     $router->group(["namespace" => "NewsSource"], function() use ($router) {
