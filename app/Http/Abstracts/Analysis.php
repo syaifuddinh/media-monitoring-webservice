@@ -11,13 +11,21 @@ class Analysis
     public function query($keyword, $startDate, $endDate, $date = null) {
         $endDate = $endDate ? $endDate . " 23:59" : $endDate;
         $list = DB::table(self::$table);
-        $list = $list->orderBy("date", "DESC");
+        $list = $list->orderBy("analysis.date", "DESC");
         $list = $keyword ? $list->where(function($query) use ($keyword) {
             $query->where("description", "LIKE", "%$keyword%");
         }) : $list;
-        $list = $startDate ? $list->where("date", ">=", $startDate) : $list;
-        $list = $endDate ? $list->where("date", "<=", $endDate) : $list;
-        $list = $date ? $list->where("date", "=", $date) : $list;
+        $list = $startDate ? $list->where("analysis.date", ">=", $startDate) : $list;
+        $list = $endDate ? $list->where("analysis.date", "<=", $endDate) : $list;
+        $list = $date ? $list->where("analysis.date", "=", $date) : $list;
+
+        $news = DB::table("rawdata")
+        ->groupBy(DB::raw("DATE_FORMAT(published_date, '%Y-%m-%d')"))
+        ->select(DB::raw("DATE_FORMAT(published_date, '%Y-%m-%d') AS date"), DB::raw('COUNT(rawid) AS qty'));
+
+        $list = $list->leftJoinSub($news, "newsSummary", function($query){
+            $query->on("newsSummary.date", "analysis.date");
+        });
 
         return $list;
     }
@@ -39,7 +47,7 @@ class Analysis
         $queryTotal = DB::table(self::$table);
         $total = $queryTotal->count("id");
 
-        $list = $list->get();
+        $list = $list->select("analysis.id", "analysis.date", "analysis.description")->get();
 
         $data["list"] = $list;
         $data["count"] = $count;
@@ -70,6 +78,7 @@ class Analysis
         $query = $query->whereId($id);
         $query->update([
             "updated_at" => date("Y-m-d H:i:s"),
+            "date" => $date,
             "description" => $description
         ]);
     }

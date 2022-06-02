@@ -91,9 +91,13 @@ $app->routeMiddleware([
 |
 */
 
-// $app->register(App\Providers\AppServiceProvider::class);
+$app->register(App\Providers\AppServiceProvider::class);
+$app->register(\Barryvdh\DomPDF\ServiceProvider::class);
+$app->register(Maatwebsite\Excel\ExcelServiceProvider::class);
 // $app->register(App\Providers\AuthServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
+
+class_alias(Maatwebsite\Excel\Facades\Excel::class, 'Excel');
 
 /*
 |--------------------------------------------------------------------------

@@ -17,6 +17,16 @@ $router->get('/', function () use ($router) {
     return $router->app->version();
 });
 
+$router->group(["namespace" => "News"], function() use ($router) {
+    $router->get('/news/pdf', 'ExportController@pdf');
+    $router->get('/news/excel', 'ExportController@excel');
+});
+
+$router->group(["namespace" => "Analysis"], function() use ($router) {
+    $router->get('/analysis/pdf', 'ExportController@pdf');
+    $router->get('/analysis/excel', 'ExportController@excel');
+});
+
 $router->group(["namespace" => "Auth"], function() use ($router) {
     $router->post('/login', 'UserController@login');
     $router->get('/check-user', 'UserController@check');

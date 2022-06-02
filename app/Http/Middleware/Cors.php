@@ -13,7 +13,7 @@ class Cors
             'Access-Control-Allow-Methods'     => 'POST, GET, OPTIONS, PUT, DELETE',
             'Access-Control-Allow-Credentials' => 'true',
             'Access-Control-Max-Age'           => '86400',
-            'Access-Control-Allow-Headers'     => 'Content-Type, Authorization, X-Requested-With'
+            'Access-Control-Allow-Headers'     => 'Content-Type, Accept, Authorization, X-Requested-With, Application'
         ];
 
         if ($request->isMethod('OPTIONS'))
@@ -22,9 +22,15 @@ class Cors
         }
 
         $response = $next($request);
-        foreach($headers as $key => $value)
-        {
-            $response->header($key, $value);
+        $symfonyResponse = 'Symfony\Component\HttpFoundation\Response';
+        if ($response instanceof $symfonyResponse) {
+            foreach ($headers as $key => $value) {
+                $response->headers->set($key, $value);
+            }
+            return $response;
+        } else {
+            $response->header('Access-Control-Allow-Methods', 'HEAD, GET, POST, PUT, PATCH, DELETE');
+            $response->header('Access-Control-Allow-Headers', $request->header('Access-Control-Request-Headers'));
         }
 
         return $response;
