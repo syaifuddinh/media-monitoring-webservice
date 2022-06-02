@@ -8,7 +8,7 @@ class Analysis
 {
     public static $table = "analysis";
 
-    public function query($keyword, $startDate, $endDate) {
+    public function query($keyword, $startDate, $endDate, $date = null) {
         $endDate = $endDate ? $endDate . " 23:59" : $endDate;
         $list = DB::table(self::$table);
         $list = $list->orderBy("date", "DESC");
@@ -17,17 +17,18 @@ class Analysis
         }) : $list;
         $list = $startDate ? $list->where("date", ">=", $startDate) : $list;
         $list = $endDate ? $list->where("date", "<=", $endDate) : $list;
+        $list = $date ? $list->where("date", "=", $date) : $list;
 
         return $list;
     }
 
-    public static function index($keyword, $startDate, $endDate, $paging = [])
+    public static function index($keyword, $startDate, $endDate, $paging = [], $date = null)
     {
         
         $page = $paging["page"] ?? 1;
         $length = $paging["length"] ?? 1000000000000;
         $skip = ($page - 1) * $length;
-        $list = self::query($keyword, $startDate, $endDate);
+        $list = self::query($keyword, $startDate, $endDate, $date);
         $list = $list->select("id", "date", "description");
         $count = $list->count("id");
         $list = $list->skip($skip);

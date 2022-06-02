@@ -19,6 +19,7 @@ class IndexController extends Controller
         $keyword = $request->input('keyword');
         $startDate = $request->input('startDate');
         $endDate = $request->input('endDate');
+        $date = $request->input('date');
         $page = $request->input('page');
         $length = $request->input('length');
         $page = $page ? $page : 1;
@@ -28,7 +29,7 @@ class IndexController extends Controller
             "length" => $length
         ];
 
-        $data = Analysis::index($keyword, $startDate, $endDate, $paging);
+        $data = Analysis::index($keyword, $startDate, $endDate, $paging, $date);
 
         return response()->json([
             "success" => true,

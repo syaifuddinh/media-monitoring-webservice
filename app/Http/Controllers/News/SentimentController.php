@@ -14,14 +14,47 @@ class SentimentController extends Controller
     {
         $data = null;
         $sentiment = $request->input('sentiment');
+        DB::beginTransaction();
         try {
-            $data = News::validate($newsId);
+            $data = News::show($newsId);
+            $options = [
+                [
+                    "key" => "positif",
+                    "column" => "sentpos",
+                    "value" => $data->sentpos
+                ],
+                [
+                    "key" => "negatif",
+                    "column" => "sentneg",
+                    "value" => $data->sentneg
+                ],
+                [
+                    "key" => "netral",
+                    "column" => "sentneutral",
+                    "value" => $data->sentneutral
+                ]
+            ];
+            $options = collect($options);
+            $max = $options->max("value");
+            $column = $options->where("key", $sentiment)->first()["column"];
+            $otherColumn = $options->where("key", "!=", $sentiment)->toArray();
+            $remainValue = (1 - $max) / 2;
             DB::table(News::$table)
             ->whereRawid($newsId)
             ->update([
-                "sentiment" => $sentiment
+                "sentiment" => $sentiment,
+                $column => $max
             ]);
+            foreach($otherColumn as $value) {
+                DB::table(News::$table)
+                ->whereRawid($newsId)
+                ->update([
+                    $value['column'] => $remainValue
+                ]);
+            }
+            DB::commit();
         } catch(\Exception $e) {
+            DB::rollback();
             return response()->json([
                 "success" => false,
                 "message" => $e->getMessage(),
