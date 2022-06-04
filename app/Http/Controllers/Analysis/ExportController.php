@@ -25,6 +25,9 @@ class ExportController extends Controller
         $data = $data->select(
             "analysis.date",
             "analysis.description",
+            DB::raw("COALESCE(positifNewsSummary.positifQty, 0) AS positifQty"),
+            DB::raw("COALESCE(negatifNewsSummary.negatifQty, 0) AS negatifQty"),
+            DB::raw("COALESCE(netralNewsSummary.netralQty, 0) AS netralQty"),
             DB::raw("COALESCE(newsSummary.qty, 0) AS qty")
         );
         return Excel::download(new AnalysisExport($data), 'Analisa.xlsx');
@@ -42,6 +45,9 @@ class ExportController extends Controller
         ->select(
             "analysis.date",
             "analysis.description",
+            DB::raw("COALESCE(positifNewsSummary.positifQty, 0) AS positifQty"),
+            DB::raw("COALESCE(negatifNewsSummary.negatifQty, 0) AS negatifQty"),
+            DB::raw("COALESCE(netralNewsSummary.netralQty, 0) AS netralQty"),
             DB::raw("COALESCE(newsSummary.qty, 0) AS qty")
         )
         ->get()

@@ -27,6 +27,9 @@ class AnalysisExport implements FromCollection, WithHeadings
             $response = $value;
             $response->description = strip_tags($response->description);
             $response->qty = strval($response->qty);
+            $response->positifQty = strval($response->positifQty);
+            $response->negatifQty = strval($response->negatifQty);
+            $response->netralQty = strval($response->netralQty);
 
             return $response;
         });
@@ -35,6 +38,6 @@ class AnalysisExport implements FromCollection, WithHeadings
 
     public function headings(): array
     {
-        return ["Tanggal", "Analisa", "Jumlah media"];
+        return ["Tanggal", "Analisa", "Sentimen Positif", "Sentimen Negatif", "Sentimen Netral", "Jumlah media"];
     }
 }

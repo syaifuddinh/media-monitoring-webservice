@@ -21,10 +21,49 @@ class Analysis
 
         $news = DB::table("rawdata")
         ->groupBy(DB::raw("DATE_FORMAT(published_date, '%Y-%m-%d')"))
-        ->select(DB::raw("DATE_FORMAT(published_date, '%Y-%m-%d') AS date"), DB::raw('COUNT(rawid) AS qty'));
+        ->select(
+            DB::raw("DATE_FORMAT(published_date, '%Y-%m-%d') AS date"),
+            DB::raw('COUNT(rawid) AS qty')
+        );
+
+        $positifNews = DB::table("rawdata")
+        ->where("sentiment", "positif")
+        ->groupBy(DB::raw("DATE_FORMAT(published_date, '%Y-%m-%d')"))
+        ->select(
+            DB::raw("DATE_FORMAT(published_date, '%Y-%m-%d') AS date"),
+            DB::raw('COUNT(rawid) AS positifQty')
+        );
+
+        $negatifNews = DB::table("rawdata")
+        ->where("sentiment", "negatif")
+        ->groupBy(DB::raw("DATE_FORMAT(published_date, '%Y-%m-%d')"))
+        ->select(
+            DB::raw("DATE_FORMAT(published_date, '%Y-%m-%d') AS date"),
+            DB::raw('COUNT(rawid) AS negatifQty')
+        );
+
+        $netralNews = DB::table("rawdata")
+        ->where("sentiment", "netral")
+        ->groupBy(DB::raw("DATE_FORMAT(published_date, '%Y-%m-%d')"))
+        ->select(
+            DB::raw("DATE_FORMAT(published_date, '%Y-%m-%d') AS date"),
+            DB::raw('COUNT(rawid) AS netralQty')
+        );
 
         $list = $list->leftJoinSub($news, "newsSummary", function($query){
             $query->on("newsSummary.date", "analysis.date");
+        });
+
+        $list = $list->leftJoinSub($positifNews, "positifNewsSummary", function($query){
+            $query->on("positifNewsSummary.date", "analysis.date");
+        });
+
+        $list = $list->leftJoinSub($negatifNews, "negatifNewsSummary", function($query){
+            $query->on("negatifNewsSummary.date", "analysis.date");
+        });
+
+        $list = $list->leftJoinSub($netralNews, "netralNewsSummary", function($query){
+            $query->on("netralNewsSummary.date", "analysis.date");
         });
 
         return $list;

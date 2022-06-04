@@ -22,6 +22,15 @@
                         Analisa
                     </th>
                     <th>
+                        Sentimen Positif
+                    </th>
+                    <th>
+                        Sentimen Negatif
+                    </th>
+                    <th>
+                        Sentimen Netral
+                    </th>
+                    <th>
                         Jumlah Media
                     </th>
                 </tr>
@@ -39,7 +48,16 @@
                     <td>
                         {!! $value->description !!}
                     </td>
-                    <td>
+                    <td style="text-align:right">
+                        {{ $value->positifQty }}
+                    </td>
+                    <td style="text-align:right">
+                        {{ $value->negatifQty }}
+                    </td>
+                    <td style="text-align:right">
+                        {{ $value->netralQty }}
+                    </td>
+                    <td style="text-align:right">
                         {{ $value->qty }}
                     </td>
                 </tr>
