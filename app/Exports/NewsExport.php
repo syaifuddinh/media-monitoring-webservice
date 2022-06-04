@@ -6,8 +6,9 @@ use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\Exportable;
+use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class NewsExport implements FromQuery
+class NewsExport implements FromQuery, WithHeadings
 {
     public $data;
 
@@ -21,5 +22,9 @@ class NewsExport implements FromQuery
     public function query()
     {
         return $this->data;
+    }
+    public function headings(): array
+    {
+        return ["Judul", "Konten", "Tanggal", "Sumber Berita", "Sentimen", "Sentimen Positif", "Sentimen Negatif", "Sentimen Netral"];
     }
 }

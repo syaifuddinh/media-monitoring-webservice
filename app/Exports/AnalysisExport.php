@@ -5,9 +5,11 @@ namespace App\Exports;
 use Illuminate\Contracts\View\View;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\FromQuery;
+use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\Exportable;
+use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class AnalysisExport implements FromQuery
+class AnalysisExport implements FromCollection, WithHeadings
 {
     public $data;
 
@@ -18,8 +20,21 @@ class AnalysisExport implements FromQuery
         $this->data = $data;
     }
 
-    public function query()
+    public function collection()
     {
-        return $this->data;
+        $data = $this->data->get();
+        $data = $data->map(function($value){
+            $response = $value;
+            $response->description = strip_tags($response->description);
+            $response->qty = strval($response->qty);
+
+            return $response;
+        });
+        return $data;
+    }
+
+    public function headings(): array
+    {
+        return ["Tanggal", "Analisa", "Jumlah media"];
     }
 }
